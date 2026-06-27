@@ -71,6 +71,7 @@ struct scheduler * scheduler_init(void)
         sched->num_tasks = 0;
         sched->index = 0;
         sched->timer_list_age = 0;
+        printf("scheduler initialized\n");
     }
     return sched;
 }
@@ -615,4 +616,10 @@ static int scheduler_remove_complete_tasks(struct scheduler *sched)
     return 0;
 }
 
+int scheduler_add_oneshot_task(struct scheduler *sched, int *id,
+                               int (*cb)(void *arg), void *arg,
+                               unsigned int delay_ms)
+{
+    return scheduler_add_timer_task(sched, false, id, cb, arg, delay_ms, 1, true);
+}
 
