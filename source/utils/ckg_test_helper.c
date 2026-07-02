@@ -43,6 +43,13 @@ static void ckg_bind_via_param(vap_svc_t *svc, vap_svc_event_fn_t handler)
     svc->event_fn = handler;
 }
 
+/* ─── Helper: dispatches via start_fn and stop_fn struct fn-ptr fields ─── */
+static void ckg_dispatch_start_stop(vap_svc_t *svc)
+{
+    svc->start_fn(svc, 0, NULL);
+    svc->stop_fn(svc, 0, NULL);
+}
+
 /* ─── Main test function exercising all CKG edge types ─── */
 int ckg_test_edges(struct scheduler *sched, vap_svc_t *svc)
 {
@@ -64,6 +71,9 @@ int ckg_test_edges(struct scheduler *sched, vap_svc_t *svc)
     /* BINDS_CALLBACK (direct): assign fn-ptr to struct field */
     svc->start_fn = vap_svc_private_start;
     svc->stop_fn  = vap_svc_private_stop;
+
+    /* DISPATCHES_VIA: call through start_fn and stop_fn via helper */
+    ckg_dispatch_start_stop(svc);
 
     /* BINDS_CALLBACK (parameter-forwarded): fn-ptr passed through param */
     ckg_bind_via_param(svc, vap_svc_private_event);
